@@ -662,7 +662,7 @@ function lottery() {
       }
     }
 
-    prizes[currentPrizeIndex].count = prizes[currentPrizeIndex].count + currentSpecialLuckyCount
+    prizes[currentPrizeIndex].count = prizes[currentPrizeIndex].count + currentSpecialLuckyCount*2
     setPrizes(prizes);
     basicData.prizes = prizes
     setTimeout(() => {

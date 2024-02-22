@@ -9,6 +9,7 @@ import {
   resetPrize
 } from "./prizeList";
 import { NUMBER_MATRIX } from "./config.js";
+import { specialLuckySN } from "./constant.js";
 
 const ROTATE_TIME = 3000;
 const ROTATE_LOOP = 1000;
@@ -48,6 +49,7 @@ let selectedCardIndex = [],
     users: [], //所有人员
     luckyUsers: {}, //已中奖人员
     leftUsers: [] //未中奖人员
+
   },
   interval,
   // 当前抽的奖项，从最低奖开始抽，直到抽到大奖
@@ -72,6 +74,8 @@ function initAll() {
       COMPANY = data.cfgData.COMPANY;
       HIGHLIGHT_CELL = createHighlight();
       basicData.prizes = prizes;
+
+      // todo 设置所有的奖项初始化
       setPrizes(prizes);
 
       TOTAL_CARDS = ROW_COUNT * COLUMN_COUNT;
@@ -96,6 +100,9 @@ function initAll() {
 
       showPrizeList(currentPrizeIndex);
       let curLucks = basicData.luckyUsers[currentPrize.type];
+      console.log(curLucks);
+      console.log(prizes)
+      
       setPrizeData(currentPrizeIndex, curLucks ? curLucks.length : 0, true);
     }
   });
@@ -632,10 +639,15 @@ function lottery() {
       basicData.leftUsers = basicData.users.slice();
       leftCount = basicData.leftUsers.length;
     }
-
+    let currentSpecialLuckyCount = 0
     for (let i = 0; i < perCount; i++) {
       let luckyId = random(leftCount);
-      currentLuckys.push(basicData.leftUsers.splice(luckyId, 1)[0]);
+      const currentLuck = basicData.leftUsers.splice(luckyId, 1)[0]
+
+      if( specialLuckySN.includes(currentLuck[0])) {
+        currentSpecialLuckyCount++
+      }
+      currentLuckys.push(currentLuck);
       leftCount--;
       leftPrizeCount--;
 
@@ -650,7 +662,13 @@ function lottery() {
       }
     }
 
-    // console.log(currentLuckys);
+    prizes[currentPrizeIndex].count = prizes[currentPrizeIndex].count + currentSpecialLuckyCount
+    setPrizes(prizes);
+    basicData.prizes = prizes
+    setTimeout(() => {
+    changePrize()
+    }, 100);
+
     selectCard();
   });
 }
